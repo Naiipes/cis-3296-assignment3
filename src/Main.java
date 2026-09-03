@@ -17,7 +17,7 @@ public class Main {
     public static void calculateGrowth(int D) {
         ArrayList<Double> scores = new ArrayList<>();
         double score = 10;
-        double R =1.2;
+        double R = 1.2;
         for (int i = 1; i <= D; i++) {
             score *= R;
             scores.add(score);
@@ -37,4 +37,6 @@ public class Main {
         }
         System.out.println("Sum: " + Math.round(sum * 100.0) / 100.0);
     }
+
+    // Testing line for merging branches.
 }
