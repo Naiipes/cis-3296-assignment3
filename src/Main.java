@@ -4,13 +4,17 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Enter round number: ");
         Scanner kb = new Scanner(System.in);
-        int round = kb.nextInt();
-        while (round > 0) {
-            calculateGrowth(round);
-            System.out.println("Enter round number or -1 to exit: ");
-            round = kb.nextInt();
-            if (round == -1)
-                break;
+        if (kb.hasNextInt()) {
+            int round = kb.nextInt();
+            while (round > 0) {
+                calculateGrowth(round);
+                System.out.println("Enter round number or -1 to exit: ");
+                round = kb.nextInt();
+                if (round == -1)
+                    break;
+            }
+        } else {
+            System.out.println("Not a number\n");
         }
     }
 
