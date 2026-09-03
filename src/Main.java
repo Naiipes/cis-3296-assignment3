@@ -35,8 +35,6 @@ public class Main {
         } else {
             System.out.println("Not Qualified\n");
         }
-        System.out.println("Sum: " + sum);
+        System.out.println("Sum: " + Math.round(sum));
     }
-
-    // Testing line for merging branches.
 }
