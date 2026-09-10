@@ -7,6 +7,7 @@ import java.io.*;
 public class Main {
     public static void main(String[] args) {
         List<Team> teams = getTeams();
+        List<Team> leaderboard = new ArrayList<>();
 
         Scanner kb = new Scanner(System.in);
 
@@ -17,8 +18,14 @@ public class Main {
                 System.out.println("Invalid number. Please enter a round between 4 and 10: ");
                 D = kb.nextInt();
             }
-            System.out.println(teamScore(teams.get(2), D));
-            System.out.println(teams.get(2).print());
+            for(Team t : teams)
+            {
+                teamScore(t, D);
+                leaderboard = updateLeaderboard(leaderboard, t);
+            }
+            printLeaderboard(leaderboard);
+            //System.out.println(teamScore(teams.get(2), D));
+            //System.out.println(teams.get(2).print());
         } else {
             System.out.println("Invalid input.");
             return;
@@ -40,7 +47,7 @@ public class Main {
 //        }
     }
 
-    public static List getTeams() {
+    public static List<Team> getTeams() {
         List<Team> teams;
         try (Reader in = Files.newBufferedReader(Path.of("hackathon_teams.csv"))) {
             teams = new CsvToBeanBuilder<Team>(in).withType(Team.class).build().parse();
@@ -50,15 +57,15 @@ public class Main {
         return teams;
     }
 
-    public static double teamScore(Team t, int D) {
+    public static void teamScore(Team t, int D) {
         if (D <= 0) {
-            return 0;
+            return;
         }
         ArrayList<Double> scores = new ArrayList<>();
         double score = t.getInitial_score();
         scores.add(score);
         double R = t.getGrowth_rate();
-        for (int i = 1; i < D; i++) {
+        for (int i = 0; i < D; i++) {
             score *= R;
             scores.add(score);
         }
@@ -75,6 +82,26 @@ public class Main {
         } else {
             t.setIsQualified(false);
         }
-        return sum;
+        t.setCumulative_score(sum);
+    }
+
+    public static List<Team> updateLeaderboard(List<Team> teams, Team t)
+    {
+        int i = 0;
+        while(i < teams.size() && teams.get(i).getCumulative_score() > t.getCumulative_score())
+        {
+            i++;
+        }
+        teams.add(i, t);
+        return teams;
+    }
+
+    public static void printLeaderboard(List<Team> teams)
+    {
+        System.out.println("Leaderboard:");
+        for(int i = 0; i < teams.size(); i++)
+        {
+            System.out.println(teams.get(i).leaderboardPrint());
+        }
     }
 }
