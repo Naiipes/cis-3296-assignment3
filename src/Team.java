@@ -11,6 +11,7 @@ public class Team {
         private double growth_rate;
 
     private boolean isQualified;
+    private double cumulative_score;
 
     public Team() {}
 
@@ -22,12 +23,26 @@ public class Team {
         this.isQualified = isQualified;
     }
     public boolean getIsQualified() { return isQualified; }
+    public double getCumulative_score() { return cumulative_score; }
+    public void setCumulative_score(double cumulative_score) {
+        this.cumulative_score = cumulative_score;
+    }
+
     public String print() {
         return "" +
                 university + " " +
                 team_name + " " +
                 initial_score + " " +
                 growth_rate + " " +
+                isQualified;
+    }
+
+    public String leaderboardPrint()
+    {
+        return "" +
+                university + " " +
+                team_name + " " +
+                cumulative_score + " " +
                 isQualified;
     }
 }
