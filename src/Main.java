@@ -24,27 +24,11 @@ public class Main {
                 leaderboard = updateLeaderboard(leaderboard, t);
             }
             printLeaderboard(leaderboard);
-            //System.out.println(teamScore(teams.get(2), D));
-            //System.out.println(teams.get(2).print());
         } else {
             System.out.println("Invalid input.");
             return;
         }
         System.out.println("Finish");
-//        System.out.println("Enter round number: ");
-//        Scanner kb = new Scanner(System.in);
-//        if (kb.hasNextInt()) {
-//            int round = kb.nextInt();
-//            while (round > 0) {
-//                calculateGrowth(round);
-//                System.out.println("Enter round number or -1 to exit: ");
-//                round = kb.nextInt();
-//                if (round == -1)
-//                    break;
-//            }
-//        } else {
-//            System.out.println("Not a number\n");
-//        }
     }
 
     public static List<Team> getTeams() {
@@ -65,7 +49,7 @@ public class Main {
         double score = t.getInitial_score();
         scores.add(score);
         double R = t.getGrowth_rate();
-        for (int i = 0; i < D; i++) {
+        for (int i = 1; i < D; i++) {
             score *= R;
             scores.add(score);
         }
