@@ -10,8 +10,9 @@ public class Team {
     @CsvBindByName(column = "growth_rate")
         private double growth_rate;
 
-    private boolean isQualified;
     private double cumulative_score;
+    private int rank;
+    private String qualStatus;
 
     public Team() {}
 
@@ -19,14 +20,14 @@ public class Team {
     public String getTeam_name() { return team_name; }
     public int getInitial_score() { return initial_score; }
     public double getGrowth_rate() { return growth_rate; }
-    public void setIsQualified(boolean isQualified) {
-        this.isQualified = isQualified;
-    }
-    public boolean getIsQualified() { return isQualified; }
     public double getCumulative_score() { return cumulative_score; }
     public void setCumulative_score(double cumulative_score) {
         this.cumulative_score = cumulative_score;
     }
+    public int getRank() { return rank; }
+    public void setRank(int rank) { this.rank = rank; }
+    public String getQualStatus() { return qualStatus; }
+    public void setQualStatus(String qualStatus) { this.qualStatus = qualStatus; }
 
     public String print() {
         return "" +
@@ -34,15 +35,6 @@ public class Team {
                 team_name + " " +
                 initial_score + " " +
                 growth_rate + " " +
-                isQualified;
-    }
-
-    public String leaderboardPrint()
-    {
-        return "" +
-                university + " " +
-                team_name + " " +
-                cumulative_score + " " +
-                isQualified;
+                qualStatus;
     }
 }

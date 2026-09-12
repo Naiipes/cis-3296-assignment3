@@ -1,16 +1,20 @@
-import com.opencsv.bean.CsvToBeanBuilder;
+import java.io.IOException;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+import com.opencsv.bean.CsvToBeanBuilder;
 
 public class Main {
     public static void main(String[] args) {
         List<Team> teams = getTeams();
-        List<Team> leaderboard = new ArrayList<>();
 
         Scanner kb = new Scanner(System.in);
 
+        printTeams(teams);
         System.out.println("Enter number of rounds: ");
         if (kb.hasNextInt()) {
             int D = kb.nextInt();
@@ -21,9 +25,9 @@ public class Main {
             for(Team t : teams)
             {
                 teamScore(t, D);
-                leaderboard = updateLeaderboard(leaderboard, t);
             }
-            printLeaderboard(leaderboard);
+            updateLeaderboard(teams);
+            printLeaderboard(teams);
         } else {
             System.out.println("Invalid input.");
             return;
@@ -62,30 +66,68 @@ public class Main {
             }
         }
         if (isQualified) {
-            t.setIsQualified(true);
+            t.setQualStatus("QUALIFIED");
         } else {
-            t.setIsQualified(false);
+            t.setQualStatus("NOT QUALIFIED");
         }
         t.setCumulative_score(sum);
     }
 
-    public static List<Team> updateLeaderboard(List<Team> teams, Team t)
+    public static List<Team> updateLeaderboard(List<Team> teams)
     {
-        int i = 0;
-        while(i < teams.size() && teams.get(i).getCumulative_score() > t.getCumulative_score())
+        teams.sort((t1, t2) -> Double.compare(t2.getCumulative_score(), t1.getCumulative_score()));
+
+        int rank = 1;
+        for(int i = 0; i < teams.size(); i++)
         {
-            i++;
+            if(i > 0 && teams.get(i).getCumulative_score() ==  teams.get(i - 1).getCumulative_score())
+            {
+                teams.get(i).setRank(teams.get(i - 1).getRank());
+            }
+            else
+            {
+                teams.get(i).setRank(rank);
+            }
+            rank++;
         }
-        teams.add(i, t);
         return teams;
     }
 
     public static void printLeaderboard(List<Team> teams)
     {
-        System.out.println("Leaderboard:");
-        for(int i = 0; i < teams.size(); i++)
+        System.out.printf("%-14s %-32s %-24s %-22s %-20s\n",
+            "Rank", "University", "Team Name", "Score", "Status");
+        System.out.println("-------------------------------------------------------" + 
+            "----------------------------------------------------");
+
+        for(Team t : teams)
         {
-            System.out.println(teams.get(i).leaderboardPrint());
+            System.out.printf("%-5s %-40s %-23s %-20.5f %-20s\n",
+                " " + t.getRank(),
+                t.getUniversity(),
+                t.getTeam_name(),
+                t.getCumulative_score(),
+                t.getQualStatus());
         }
+        System.out.println("-------------------------------------------------------" + 
+            "----------------------------------------------------");
+    }
+
+    public static void printTeams(List<Team> teams)
+    {
+        System.out.printf("%-43s %-20s %-20s %-10s\n",
+            "        University", "Team Name", "Initial Score", "Growth Rate");
+        System.out.println("-----------------------------------------------------" + 
+            "--------------------------------------------");  
+        for(Team t : teams)
+        {
+            System.out.printf("%-40s %-28s %-17d %-10.5f\n",
+                t.getUniversity(),
+                t.getTeam_name(),
+                t.getInitial_score(),
+                t.getGrowth_rate());
+        }
+        System.out.println("-----------------------------------------------------" + 
+            "--------------------------------------------");    
     }
 }
