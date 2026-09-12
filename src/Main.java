@@ -28,7 +28,55 @@ public class Main {
             }
             updateLeaderboard(teams);
             printLeaderboard(teams);
-        } else {
+
+            // Interactive interface starts here
+            // Test code only, maybe we can make a separate method to enter the interactive interface
+            System.out.println("Would you like to view a specific Team's information? (Y/N)");
+            String input = kb.next();
+                if(input.equalsIgnoreCase("Y"))
+                {
+                    System.out.println("Enter the Team Name or University: ");
+                    String teamName = kb.next();
+                    viewTeamInfo(teams, teamName);
+                }
+                else
+                {
+                    System.out.println("Thank you for using the program.");
+                }
+
+            System.out.println("Would you like to add a new team? (Y/N)");
+            input = kb.next();
+            if(input.equalsIgnoreCase("Y"))
+            {
+                addTeam(teams, kb);
+                printTeams(teams);
+            }
+            else
+            {
+                System.out.println("Thank you for using the program.");
+            }
+            System.out.println("Would you like to update a team's information? (Y/N)");
+            input = kb.next();
+            if(input.equalsIgnoreCase("Y"))
+            {
+                System.out.println("Enter the Team Name or University: ");
+                String teamName = kb.next();
+                for(Team t: teams)
+                {
+                    if(t.getTeam_name().equalsIgnoreCase(teamName) || t.getUniversity().equalsIgnoreCase(teamName))
+                    {
+                        updateTeamInfo(t, kb);
+                        printTeamInfo(t);
+                    }
+                }
+            }
+            else
+            {
+                System.out.println("Thank you for using the program.");
+                return;
+            }
+        } 
+        else {
             System.out.println("Invalid input.");
             return;
         }
@@ -115,19 +163,128 @@ public class Main {
 
     public static void printTeams(List<Team> teams)
     {
-        System.out.printf("%-43s %-20s %-20s %-10s\n",
-            "        University", "Team Name", "Initial Score", "Growth Rate");
+        System.out.printf("%-45s %-22s %-20s %-10s\n",
+            "          University", "Team Name", "Initial Score", "Growth Rate");
         System.out.println("-----------------------------------------------------" + 
-            "--------------------------------------------");  
+            "------------------------------------------------");  
+        
+        int i = 1;
         for(Team t : teams)
         {
-            System.out.printf("%-40s %-28s %-17d %-10.5f\n",
+            System.out.printf("%-3s %-40s %-28s %-17d %-10.5f\n",
+                i + ".",
                 t.getUniversity(),
                 t.getTeam_name(),
                 t.getInitial_score(),
                 t.getGrowth_rate());
+            i++;
         }
-        System.out.println("-----------------------------------------------------" + 
-            "--------------------------------------------");    
+        System.out.println("--------------------------------------------------------" + 
+            "---------------------------------------------");    
+    }
+
+    public static void viewTeamInfo(List<Team> teams, String teamName)
+    {
+        for(Team t: teams)
+        {
+            if(t.getTeam_name().equalsIgnoreCase(teamName) || t.getUniversity().equalsIgnoreCase(teamName))
+            {
+                printTeamInfo(t);
+            }
+        }
+    }
+
+    public static void printTeamInfo(Team t)
+    {
+        System.out.println(
+            "Rank: " + t.getRank() + "\n" +
+            "University: " + t.getUniversity() + "\n" +
+            "Team Name: " + t.getTeam_name() + "\n" +
+            "Initial Score: " + t.getInitial_score() + "\n" +
+            "Growth Rate: " + t.getGrowth_rate() + "\n" +
+            "Cumulative Score: " + t.getCumulative_score() + "\n" +
+            "Status: " + t.getQualStatus()
+        );
+    }
+
+    public static void addTeam(List<Team> teams, Scanner kb)
+    {
+        Team newTeam = new Team();
+        System.out.println("Enter the University Name: ");
+        newTeam.setUniversity(kb.nextLine());
+        System.out.println("Enter the Team Name: ");
+        newTeam.setTeam_name(kb.nextLine());
+        System.out.println("Enter the Initial Score: ");
+        while(!kb.hasNextInt())
+        {
+            System.out.println("Invalid input. Please enter an integer for the Initial Score: ");
+            kb.next();
+        }
+        newTeam.setInitial_score(kb.nextInt());
+        System.out.println("Enter the Growth Rate: ");
+        while(!kb.hasNextDouble())
+        {
+            System.out.println("Invalid input. Please enter a decimal for the Growth Rate: ");
+            kb.next();
+        }
+        newTeam.setGrowth_rate(kb.nextDouble());
+        teams.add(newTeam);
+        System.out.println("New team added successfully.");
+    }
+
+    public static void updateTeamInfo(Team t, Scanner kb)
+    {
+        boolean done = false;
+
+        while(!done)
+        {
+            System.out.println("What would you like to update?" +
+                "\nEnter the number corresponding to the field you want to update:" +
+                "\n0. Exit Menu" +
+                "\n1. University Name" +
+                "\n2. Team Name" +
+                "\n3. Initial Score" +
+                "\n4. Growth Rate");
+            int choice = kb.nextInt();
+            kb.nextLine(); // Consumes the newline character
+            switch(choice)
+            {
+                case 0:
+                    done = true;
+                    System.out.println("Exited update menu.");
+                    break;
+                case 1:
+                    System.out.println("Enter the new University Name: ");
+                    t.setUniversity(kb.nextLine());
+                    break;
+                case 2:
+                    System.out.println("Enter the new Team Name: ");
+                    t.setTeam_name(kb.nextLine());
+                    break;
+                case 3:
+                    System.out.println("Enter the new Initial Score: ");
+                    while(!kb.hasNextInt())
+                    {
+                        System.out.println("Invalid input. Please enter an integer for the Initial Score: ");
+                        kb.next();
+                    }
+                    t.setInitial_score(kb.nextInt());
+                    kb.nextLine();
+                    break;
+                case 4:
+                    System.out.println("Enter the new Growth Rate: ");
+                    while(!kb.hasNextDouble())
+                    {
+                        System.out.println("Invalid input. Please enter a decimal for the Growth Rate: ");
+                        kb.next();
+                    }
+                    t.setGrowth_rate(kb.nextDouble());
+                    kb.nextLine();
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+            }
+        }
+        System.out.println("Team information updated successfully.");
     }
 }
