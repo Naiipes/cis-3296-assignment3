@@ -209,6 +209,7 @@ public class Main {
 
     public static void addTeam(List<Team> teams, Scanner kb)
     {
+        kb.nextLine();
         Team newTeam = new Team();
         System.out.println("Enter the University Name: ");
         newTeam.setUniversity(kb.nextLine());
