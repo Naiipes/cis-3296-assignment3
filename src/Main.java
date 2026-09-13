@@ -31,65 +31,73 @@ public class Main {
             printLeaderboard(teams);
 
             // Interactive interface starts here
-            // Test code only, maybe we can make a separate method to enter the interactive interface
-            System.out.println("Would you like to view a specific Team's information? (Y/N)");
-            String input = kb.next();
+            // loops so these can be used more than once per run, instead of only once
+            boolean keepGoing = true;
+            while (keepGoing) {
+                System.out.println("Would you like to view a specific Team's information? (Y/N)");
+                String input = kb.next();
+                    if(input.equalsIgnoreCase("Y"))
+                    {
+                        kb.nextLine(); // Consume newline from next()
+                        System.out.println("Enter the Team Name or University: ");
+                        String teamName = kb.nextLine();
+                        viewTeamInfo(teams, teamName);
+                    }
+                    else
+                    {
+                        System.out.println("Thank you for using the program.");
+                    }
+
+                System.out.println("Would you like to add a new team? (Y/N)");
+                input = kb.next();
                 if(input.equalsIgnoreCase("Y"))
                 {
-                    kb.nextLine(); // Consume newline from next()
+                    addTeam(teams, kb);
+                    printTeams(teams);
+                    // save so it's not lost next run
+                    saveTeams(teams, "hackathon_teams.csv");
+                    System.out.println("Changes saved to hackathon_teams.csv");
+                }
+                else
+                {
+                    System.out.println("Thank you for using the program.");
+                }
+                System.out.println("Would you like to update a team's information? (Y/N)");
+                input = kb.next();
+                if(input.equalsIgnoreCase("Y"))
+                {
+                    kb.nextLine(); // Consume newline from next();
                     System.out.println("Enter the Team Name or University: ");
                     String teamName = kb.nextLine();
-                    viewTeamInfo(teams, teamName);
+                    boolean found = false;
+                    for(Team t: teams)
+                    {
+                        if(t.getTeam_name().equalsIgnoreCase(teamName) || t.getUniversity().equalsIgnoreCase(teamName))
+                        {
+                            found = true;
+                            updateTeamInfo(t, kb);
+                            printTeamInfo(t);
+                        }
+                    }
+
+                    if (!found) {
+                        System.out.println("No team or university found matching \"" + teamName + "\"\n");
+                    } else {
+                        // save so it's not lost next run
+                        saveTeams(teams, "hackathon_teams.csv");
+                        System.out.println("Changes saved to hackathon_teams.csv");
+                    }
                 }
                 else
                 {
                     System.out.println("Thank you for using the program.");
                 }
 
-            System.out.println("Would you like to add a new team? (Y/N)");
-            input = kb.next();
-            if(input.equalsIgnoreCase("Y"))
-            {
-                addTeam(teams, kb);
-                printTeams(teams);
-                // save so it's not lost next run
-                saveTeams(teams, "hackathon_teams.csv");
-                System.out.println("Changes saved to hackathon_teams.csv");
-            }
-            else
-            {
-                System.out.println("Thank you for using the program.");
-            }
-            System.out.println("Would you like to update a team's information? (Y/N)");
-            input = kb.next();
-            if(input.equalsIgnoreCase("Y"))
-            {
-                kb.nextLine(); // Consume newline from next();
-                System.out.println("Enter the Team Name or University: ");
-                String teamName = kb.nextLine();
-                boolean found = false;
-                for(Team t: teams)
-                {
-                    if(t.getTeam_name().equalsIgnoreCase(teamName) || t.getUniversity().equalsIgnoreCase(teamName))
-                    {
-                        found = true;
-                        updateTeamInfo(t, kb);
-                        printTeamInfo(t);
-                    }
+                System.out.println("Would you like to do anything else? (Y/N)");
+                String more = kb.next();
+                if (!more.equalsIgnoreCase("Y")) {
+                    keepGoing = false;
                 }
-
-                if (!found) {
-                    System.out.println("No team or university found matching \"" + teamName + "\"\n");
-                } else {
-                    // save so it's not lost next run
-                    saveTeams(teams, "hackathon_teams.csv");
-                    System.out.println("Changes saved to hackathon_teams.csv");
-                }
-            }
-            else
-            {
-                System.out.println("Thank you for using the program.");
-                return;
             }
         }
         else {
