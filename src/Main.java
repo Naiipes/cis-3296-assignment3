@@ -35,8 +35,9 @@ public class Main {
             String input = kb.next();
                 if(input.equalsIgnoreCase("Y"))
                 {
+                    kb.nextLine(); // Consume newline from next()
                     System.out.println("Enter the Team Name or University: ");
-                    String teamName = kb.next();
+                    String teamName = kb.nextLine();
                     viewTeamInfo(teams, teamName);
                 }
                 else
@@ -59,15 +60,22 @@ public class Main {
             input = kb.next();
             if(input.equalsIgnoreCase("Y"))
             {
+                kb.nextLine(); // Consume newline from next();
                 System.out.println("Enter the Team Name or University: ");
-                String teamName = kb.next();
+                String teamName = kb.nextLine();
+                boolean found = false;
                 for(Team t: teams)
                 {
                     if(t.getTeam_name().equalsIgnoreCase(teamName) || t.getUniversity().equalsIgnoreCase(teamName))
                     {
+                        found = true;
                         updateTeamInfo(t, kb);
                         printTeamInfo(t);
                     }
+                }
+
+                if (!found) {
+                    System.out.println("No team or university found matching \"" + teamName + "\"\n");
                 }
             }
             else
@@ -75,7 +83,7 @@ public class Main {
                 System.out.println("Thank you for using the program.");
                 return;
             }
-        } 
+        }
         else {
             System.out.println("Invalid input.");
             return;
@@ -185,12 +193,19 @@ public class Main {
 
     public static void viewTeamInfo(List<Team> teams, String teamName)
     {
+        boolean found = false;
+
         for(Team t: teams)
         {
             if(t.getTeam_name().equalsIgnoreCase(teamName) || t.getUniversity().equalsIgnoreCase(teamName))
             {
+                found = true;
                 printTeamInfo(t);
             }
+        }
+
+        if (!found) {
+            System.out.println("No team or university found matching \"" + teamName + "\"");
         }
     }
 
@@ -246,6 +261,10 @@ public class Main {
                 "\n2. Team Name" +
                 "\n3. Initial Score" +
                 "\n4. Growth Rate");
+            while(!kb.hasNextInt()) {
+                System.out.println("Invalid input. Please enter a valid number.");
+                kb.next();
+            }
             int choice = kb.nextInt();
             kb.nextLine(); // Consumes the newline character
             switch(choice)
