@@ -1,11 +1,17 @@
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.opencsv.bean.CsvToBeanBuilder;
+
 public class Main {
     public static void main(String[] args) {
-        TeamRepository repository = new TeamRepository("hackathon_teams.csv");
-        List<Team> teams = repository.loadTeams();
+        List<Team> teams = getTeams();
 
         Scanner kb = new Scanner(System.in);
 
@@ -46,9 +52,9 @@ public class Main {
             {
                 addTeam(teams, kb);
                 printTeams(teams);
-                // save right away so the new team is still there next time the program runs
-                repository.saveTeams(teams);
-                System.out.println("Changes saved to " + repository.getFilePath());
+                // save so it's not lost next run
+                saveTeams(teams, "hackathon_teams.csv");
+                System.out.println("Changes saved to hackathon_teams.csv");
             }
             else
             {
@@ -75,9 +81,9 @@ public class Main {
                 if (!found) {
                     System.out.println("No team or university found matching \"" + teamName + "\"\n");
                 } else {
-                    // save right away so the update is still there next time the program runs
-                    repository.saveTeams(teams);
-                    System.out.println("Changes saved to " + repository.getFilePath());
+                    // save so it's not lost next run
+                    saveTeams(teams, "hackathon_teams.csv");
+                    System.out.println("Changes saved to hackathon_teams.csv");
                 }
             }
             else
@@ -91,6 +97,45 @@ public class Main {
             return;
         }
         System.out.println("Finish");
+    }
+
+    public static List<Team> getTeams() {
+        List<Team> teams;
+        try (Reader in = Files.newBufferedReader(Path.of("hackathon_teams.csv"))) {
+            teams = new CsvToBeanBuilder<Team>(in).withType(Team.class).build().parse();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return teams;
+    }
+
+    // writes the teams back out to the CSV file
+    public static void saveTeams(List<Team> teams, String filePath) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(filePath))) {
+            writer.write("university,team_name,initial_score,growth_rate");
+            writer.newLine();
+            for (Team t : teams) {
+                writer.write(String.join(",",
+                        escapeCsv(t.getUniversity()),
+                        escapeCsv(t.getTeam_name()),
+                        String.valueOf(t.getInitial_score()),
+                        String.valueOf(t.getGrowth_rate())));
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save team data to " + filePath, e);
+        }
+    }
+
+    // quotes the field if it has a comma in it so the CSV doesn't break
+    private static String escapeCsv(String value) {
+        if (value == null) {
+            return "";
+        }
+        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
     }
 
     public static void teamScore(Team t, int D) {
