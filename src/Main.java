@@ -1,16 +1,11 @@
-import java.io.IOException;
-import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import com.opencsv.bean.CsvToBeanBuilder;
-
 public class Main {
     public static void main(String[] args) {
-        List<Team> teams = getTeams();
+        TeamRepository repository = new TeamRepository("hackathon_teams.csv");
+        List<Team> teams = repository.loadTeams();
 
         Scanner kb = new Scanner(System.in);
 
@@ -51,6 +46,9 @@ public class Main {
             {
                 addTeam(teams, kb);
                 printTeams(teams);
+                // save right away so the new team is still there next time the program runs
+                repository.saveTeams(teams);
+                System.out.println("Changes saved to " + repository.getFilePath());
             }
             else
             {
@@ -76,6 +74,10 @@ public class Main {
 
                 if (!found) {
                     System.out.println("No team or university found matching \"" + teamName + "\"\n");
+                } else {
+                    // save right away so the update is still there next time the program runs
+                    repository.saveTeams(teams);
+                    System.out.println("Changes saved to " + repository.getFilePath());
                 }
             }
             else
@@ -89,16 +91,6 @@ public class Main {
             return;
         }
         System.out.println("Finish");
-    }
-
-    public static List<Team> getTeams() {
-        List<Team> teams;
-        try (Reader in = Files.newBufferedReader(Path.of("hackathon_teams.csv"))) {
-            teams = new CsvToBeanBuilder<Team>(in).withType(Team.class).build().parse();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return teams;
     }
 
     public static void teamScore(Team t, int D) {
@@ -153,7 +145,7 @@ public class Main {
     {
         System.out.printf("%-14s %-32s %-24s %-22s %-20s\n",
             "Rank", "University", "Team Name", "Score", "Status");
-        System.out.println("-------------------------------------------------------" + 
+        System.out.println("-------------------------------------------------------" +
             "----------------------------------------------------");
 
         for(Team t : teams)
@@ -165,7 +157,7 @@ public class Main {
                 t.getCumulative_score(),
                 t.getQualStatus());
         }
-        System.out.println("-------------------------------------------------------" + 
+        System.out.println("-------------------------------------------------------" +
             "----------------------------------------------------");
     }
 
@@ -173,9 +165,9 @@ public class Main {
     {
         System.out.printf("%-45s %-22s %-20s %-10s\n",
             "          University", "Team Name", "Initial Score", "Growth Rate");
-        System.out.println("-----------------------------------------------------" + 
-            "------------------------------------------------");  
-        
+        System.out.println("-----------------------------------------------------" +
+            "------------------------------------------------");
+
         int i = 1;
         for(Team t : teams)
         {
@@ -187,8 +179,8 @@ public class Main {
                 t.getGrowth_rate());
             i++;
         }
-        System.out.println("--------------------------------------------------------" + 
-            "---------------------------------------------");    
+        System.out.println("--------------------------------------------------------" +
+            "---------------------------------------------");
     }
 
     public static void viewTeamInfo(List<Team> teams, String teamName)
