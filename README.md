@@ -65,8 +65,6 @@ OpenCSV's `@CsvBindByName`.
 `cumulative_score`, `rank`, and `qualStatus` are
 calculated at runtime.
 
-**`Main.java`** is organized into four groups of methods:
-
 ## Features
 
 On startup the program lists all teams, prompts for a round number between 4 and
