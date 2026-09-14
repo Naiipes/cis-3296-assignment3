@@ -26,7 +26,7 @@ public class Main {
         updateLeaderboard(teams);
         printLeaderboard(teams);
 
-        runMenu(teams, kb);
+        runMenu(teams, kb, D);
     }
 
     // keeps asking until a valid round (4-10) is entered
@@ -48,7 +48,7 @@ public class Main {
     }
 
     // menu loop -- replaces the old one-time Y/N questions, keeps running until Exit
-    public static void runMenu(List<Team> teams, Scanner kb) {
+    public static void runMenu(List<Team> teams, Scanner kb, int D) {
         boolean exit = false;
         while (!exit) {
             System.out.println("\n===== Hackathon Leaderboard Menu =====");
@@ -79,6 +79,11 @@ public class Main {
                 case 3: {
                     addTeam(teams, kb);
                     printTeams(teams);
+                    for(Team t : teams)
+                    {
+                        teamScore(t, D);
+                    }
+                    updateLeaderboard(teams);
                     // save so it's not lost next run
                     saveTeams(teams, "hackathon_teams.csv");
                     System.out.println("Changes saved to hackathon_teams.csv");
@@ -93,11 +98,15 @@ public class Main {
                         if (t.getTeam_name().equalsIgnoreCase(teamName) || t.getUniversity().equalsIgnoreCase(teamName)) {
                             found = true;
                             updateTeamInfo(t, kb);
-                            printTeamInfo(t);
                         }
                     }
                     if (found) {
                         // save so it's not lost next run
+                        for(Team t : teams)
+                        {
+                            teamScore(t, D);
+                        }
+                        updateLeaderboard(teams);
                         saveTeams(teams, "hackathon_teams.csv");
                         System.out.println("Changes saved to hackathon_teams.csv");
                     } else {
