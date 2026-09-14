@@ -17,94 +17,102 @@ public class Main {
 
         printTeams(teams);
         System.out.println("Enter number of rounds: ");
-        if (kb.hasNextInt()) {
-            int D = kb.nextInt();
-            while((D < 4 || D > 10)) {
+        int D = readRound(kb);
+
+        for(Team t : teams)
+        {
+            teamScore(t, D);
+        }
+        updateLeaderboard(teams);
+        printLeaderboard(teams);
+
+        runMenu(teams, kb);
+    }
+
+    // keeps asking until a valid round (4-10) is entered
+    public static int readRound(Scanner kb) {
+        while (!kb.hasNextInt()) {
+            System.out.println("Invalid number. Please enter a round between 4 and 10: ");
+            kb.next();
+        }
+        int D = kb.nextInt();
+        while (D < 4 || D > 10) {
+            System.out.println("Invalid number. Please enter a round between 4 and 10: ");
+            while (!kb.hasNextInt()) {
                 System.out.println("Invalid number. Please enter a round between 4 and 10: ");
-                D = kb.nextInt();
+                kb.next();
             }
-            for(Team t : teams)
-            {
-                teamScore(t, D);
+            D = kb.nextInt();
+        }
+        return D;
+    }
+
+    // menu loop -- replaces the old one-time Y/N questions, keeps running until Exit
+    public static void runMenu(List<Team> teams, Scanner kb) {
+        boolean exit = false;
+        while (!exit) {
+            System.out.println("\n===== Hackathon Leaderboard Menu =====");
+            System.out.println("1. View leaderboard");
+            System.out.println("2. View a team's information");
+            System.out.println("3. Add a new team");
+            System.out.println("4. Update a team's information");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+
+            while (!kb.hasNextInt()) {
+                System.out.println("Invalid input. Please enter a number between 1 and 5.");
+                kb.next();
             }
-            updateLeaderboard(teams);
-            printLeaderboard(teams);
+            int choice = kb.nextInt();
 
-            // Interactive interface starts here
-            // loops so these can be used more than once per run, instead of only once
-            boolean keepGoing = true;
-            while (keepGoing) {
-                System.out.println("Would you like to view a specific Team's information? (Y/N)");
-                String input = kb.next();
-                    if(input.equalsIgnoreCase("Y"))
-                    {
-                        kb.nextLine(); // Consume newline from next()
-                        System.out.println("Enter the Team Name or University: ");
-                        String teamName = kb.nextLine();
-                        viewTeamInfo(teams, teamName);
-                    }
-                    else
-                    {
-                        System.out.println("Thank you for using the program.");
-                    }
-
-                System.out.println("Would you like to add a new team? (Y/N)");
-                input = kb.next();
-                if(input.equalsIgnoreCase("Y"))
-                {
+            switch (choice) {
+                case 1:
+                    printLeaderboard(teams);
+                    break;
+                case 2: {
+                    kb.nextLine();
+                    System.out.println("Enter the Team Name or University: ");
+                    String teamName = kb.nextLine();
+                    viewTeamInfo(teams, teamName);
+                    break;
+                }
+                case 3: {
                     addTeam(teams, kb);
                     printTeams(teams);
                     // save so it's not lost next run
                     saveTeams(teams, "hackathon_teams.csv");
                     System.out.println("Changes saved to hackathon_teams.csv");
+                    break;
                 }
-                else
-                {
-                    System.out.println("Thank you for using the program.");
-                }
-                System.out.println("Would you like to update a team's information? (Y/N)");
-                input = kb.next();
-                if(input.equalsIgnoreCase("Y"))
-                {
-                    kb.nextLine(); // Consume newline from next();
+                case 4: {
+                    kb.nextLine();
                     System.out.println("Enter the Team Name or University: ");
                     String teamName = kb.nextLine();
                     boolean found = false;
-                    for(Team t: teams)
-                    {
-                        if(t.getTeam_name().equalsIgnoreCase(teamName) || t.getUniversity().equalsIgnoreCase(teamName))
-                        {
+                    for (Team t : teams) {
+                        if (t.getTeam_name().equalsIgnoreCase(teamName) || t.getUniversity().equalsIgnoreCase(teamName)) {
                             found = true;
                             updateTeamInfo(t, kb);
                             printTeamInfo(t);
                         }
                     }
-
-                    if (!found) {
-                        System.out.println("No team or university found matching \"" + teamName + "\"\n");
-                    } else {
+                    if (found) {
                         // save so it's not lost next run
                         saveTeams(teams, "hackathon_teams.csv");
                         System.out.println("Changes saved to hackathon_teams.csv");
+                    } else {
+                        System.out.println("No team or university found matching \"" + teamName + "\"");
                     }
+                    break;
                 }
-                else
-                {
+                case 5:
+                    exit = true;
                     System.out.println("Thank you for using the program.");
-                }
-
-                System.out.println("Would you like to do anything else? (Y/N)");
-                String more = kb.next();
-                if (!more.equalsIgnoreCase("Y")) {
-                    keepGoing = false;
-                }
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please enter a number between 1 and 5.");
             }
         }
-        else {
-            System.out.println("Invalid input.");
-            return;
-        }
-        System.out.println("Finish");
     }
 
     public static List<Team> getTeams() {
